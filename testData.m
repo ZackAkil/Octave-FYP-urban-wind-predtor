@@ -25,7 +25,7 @@ data = makeData(streetDirs, streetWidths);
 X = data(:,1:(numOfZones*2)-2);
 
 % scale data of X to be within the range fo 0 and 1
-X = [X(:,1)./50,X(:,2)./360,X(:,3)./50,X(:,4)./360];
+X = [X(:,1)./50,X(:,2)./360]; %,X(:,3)./50,X(:,4)./360];
 
 % add polynomial features to X
 X = [X, X.^2, X.^3,X.^4];
@@ -73,10 +73,32 @@ y = y.*50;
 
 figure (2);
 scatter3(X(:,2),X(:,3),p);
+
 xlabel('Zone A wind speed (m/s)');     
 ylabel('Zone A wind direction (°)');
 zlabel('Zone B wind speed (m/s)');
 title('Plot of a zones wind speed and direction against prediction of another zones wind speed');
+
+%draw mesh of hypothesis
+
+meshX = meshY = [0:0.05:1];
+
+[gM,qM] = meshgrid(meshX,meshY);
+
+pairs = [gM(:) qM(:)];
+
+transPairs = [pairs, pairs.^2, pairs.^3,pairs.^4];
+
+transPairs = [ones(size(transPairs,1), 1) transPairs];
+
+predictPairs = (predict(theta, transPairs));
+
+zz = reshape(predictPairs,size(meshX,2),size(meshX,2));
+
+figure(3);
+
+mesh(meshX,meshY,zz);
+
 
 
 %disp(predict(theta))
