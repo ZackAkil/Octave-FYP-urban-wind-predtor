@@ -17,7 +17,7 @@ gw = pairs;
 
 
 nRows = size(gw,1); % number of rows
-nSample = 1000; % number of samples
+nSample = 100; % number of samples
 
 rndIDX = randperm(nRows); 
 

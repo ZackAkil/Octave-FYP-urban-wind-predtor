@@ -4,39 +4,46 @@ clear ; close all; clc
 
 %generate random zone data
 
-numOfZones = 4;
+numOfZones = 3;
 
-streetDirs = rand(1,numOfZones)*360;
+%rand ("seed", 20); %teleport artefact break 6,20
 
-streetWidths = rand(1,numOfZones)*10;
+%rand ("seed", 5); % teleport aretfact were system works
 
-   %streetDirs = [284.8755,281.5558];     
-  % streetWidths = [9.9580,3.4044];
+
+%streetDirs = rand(1,numOfZones)*360;
+
+%streetWidths = rand(1,numOfZones)*10;
+
+  streetDirs = [45,130,15];     
+  streetWidths = [3,7,8];
 
 disp([streetDirs',streetWidths']);
 
 data = makeData(streetDirs, streetWidths);
 
 
-
-% figure (2);
-% scatter3(data(:,3),data(:,4),data(:,1));
-
+% parse out zone that will try to predict
 X = data(:,1:(numOfZones*2)-2);
 
 % scale data of X to be within the range fo 0 and 1
-X = [X(:,1)./50,X(:,2)./360]; %,X(:,3)./50,X(:,4)./360];
+% X = [X(:,1)./50,X(:,2)./360 ,X(:,3)./50,X(:,4)./360];
+X = [X(:,2)./360 ,X(:,4)./360];
 
 % add polynomial features to X
 X = [X, X.^2, X.^3,X.^4];
 
-y = data(:,(numOfZones*2)-1);
+%y = data(:,(numOfZones*2)-1);
+
+% y = data(:,(numOfZones*2)-1);
+y = data(:,(numOfZones*2));
 
 % scale output of y to be between 0 adn 1
-y = y./50;
+% y = y./50;
+y = y./360;
 
 figure (1);
-scatter3(X(:,1),X(:,2),y.*50);
+scatter3(X(:,4).*360,X(:,2).*360,y.*360);
 
 xlabel('Zone A wind speed (m/s)');     
 ylabel('Zone A wind direction (°)');
@@ -57,10 +64,12 @@ X = [ones(m, 1) X];
 initial_theta = zeros(n+1, 1);
 
 %  Set options for fminunc
-options = optimset('GradObj', 'on', 'MaxIter', 400);
+options = optimset('GradObj', 'on', 'MaxIter', 4000);
 
 %  Run fminunc to obtain the optimal theta
 %  This function will return theta and the cost 
+
+
 [theta, cost] = fminunc(@(t)(costFunction(t, X, y)), initial_theta, options);
 
 % Print theta to screen
@@ -68,7 +77,7 @@ fprintf('Cost at theta found by fminunc: %f\n', cost);
 fprintf('theta: \n');
 %fprintf(' %f \n', theta);
 
-p = (predict(theta, X)).*50;
+p = (predict(theta, X)).*360;
 y = y.*50;
 
 figure (2);

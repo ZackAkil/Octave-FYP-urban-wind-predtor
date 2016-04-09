@@ -19,4 +19,7 @@ windDir3 =  (1./(1+e.^(-(gWind(:,2)-direction-270).*width))).*180;
 windDir = mod((windDir1 + windDir2 + windDir3 - 180 + direction),360);
 
 
+disp(max(windDir))
+disp(min(windDir))
+
 end
