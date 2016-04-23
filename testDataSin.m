@@ -4,19 +4,21 @@ clear ; close all; clc
 
 %generate random zone data
 
-numOfZones = 3;
+numOfZones = 6;
 
 %rand ("seed", 20); %teleport artefact break 6,20
 
 %rand ("seed", 5); % teleport aretfact were system works
 
 
-streetDirs = rand(1,numOfZones)*360;
+streetDirs = rand(1,numOfZones)*180;
+streetWidths = (rand(1,numOfZones)*9) + 1;
 
-streetWidths = rand(1,numOfZones)*10;
+ %streetDirs = [130,45,150];     
+ %streetWidths = [10,10,1];
 
-% streetDirs = [130,45,150];     
-% streetWidths = [6,7,2];
+ %  streetDirs = [323.20,   204.13,   300.69];     
+ % streetWidths = [5,   9.6460,   3.7560];
 
 disp([streetDirs',streetWidths']);
 
@@ -28,7 +30,7 @@ X = data(:,1:(numOfZones*2)-2);
 
 % scale data of X to be within the range fo 0 and 1
 % X = [X(:,1)./50,X(:,2)./360 ,X(:,3)./50,X(:,4)./360];
-X = [sinVal(X(:,2)) ,sinVal(X(:,4)),cosVal(X(:,2)) ,cosVal(X(:,4))];
+X = [sinVal(X(:,2)),cosVal(X(:,2)),sinVal(X(:,4)),cosVal(X(:,4)),sinVal(X(:,8)),cosVal(X(:,8))];
 
 % add polynomial features to X
 X = [X, X.^2];
@@ -77,14 +79,16 @@ fprintf('theta: \n');
 
 % Print theta to screen
 fprintf('Cost at theta found by fminunc: %f\n', cost);
-fprintf('theta: \n');
 
 p = predict(theta, X);
 p2 = predict(theta2, X);
 
 pDist = mod(atan2d((p-0.5).*2,(p2-0.5).*2),360);
 
-absdiff = abs (data(:,6) - pDist);
+comp = [data(1:5,6),pDist(1:5)];
+disp(comp);
+
+absdiff = diffRot(data(:,6),pDist);
 
 fprintf('average error in degrees: %f\n', mean(absdiff));
 
